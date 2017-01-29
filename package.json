@@ -1,0 +1,16 @@
+{
+  "name": "signalk-ws-provider-plugin",
+  "version": "0.0.1",
+  "description": "Signal K Node Server plugin to pull data from Signal K Gateways/Servers via WebSocket connection",
+  "main": "index.js",
+  "keywords": [
+    "signalk-node-server-plugin"
+  ],
+  "author": "teppo.kurki@iki.fi",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "mdns": "^2.3.3",
+    "signalk-client": "SignalK/signalk-js-client#discovery-fix"
+  },
+  "devDependencies": {}
+}
