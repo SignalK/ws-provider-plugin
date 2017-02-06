@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "mdns": "^2.3.3",
-    "signalk-client": "SignalK/signalk-js-client#discovery-fix"
+    "signalk-client": "SignalK/signalk-js-client"
   },
   "devDependencies": {}
 }
