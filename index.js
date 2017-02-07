@@ -19,79 +19,52 @@ const SignalK = require('signalk-client')
 module.exports = function(app) {
   var plugin = {}
 
-  var selfHost = app.config.getExternalHostname() + ".";
-  var selfPort = app.config.getExternalPort();
-  var remoteServers = {};
-  remoteServers[this.selfHost + ":" + this.selfPort] = {};
-
-  var signalkClient
-
-  function connect(discovery) {
-    debug(discovery)
-    if(remoteServers[discovery.host + ":" + discovery.port]) {
-      debug("Discovered " + discovery.host + ":" + discovery.port + " already known, not connecting");
-      return;
-    }
-    var signalkClient = new SignalK.Client();
-    var url
-    if(discovery.discoveryResponse) {
-      _object.values(discovery.discoveryResponse.endpoints)[0]['signalk-ws'];
-    } else {
-      url = "ws://" + discovery.host + ":" + discovery.port + "/signalk/v1/stream?subscribe=all"
-    }
-    var onConnect = function(connection) {
-      remoteServers[discovery.host + ":" + discovery.port] = {};
-      debug("Connected to " + url);
-    }
-    var onDisconnect = function() {
-      debug("Disconnected from " + url);
-    }
-    var onError = function(err) {
-      debug("Error:" + err);
-    }
-    signalkClient.connectDeltaByUrl(
-      url,
-      msg => {
-        if(msg.updates) {
-          app.signalk.addDelta.call(app.signalk, msg)
-        }
-      },
-      onConnect,
-      onDisconnect,
-      onError);
-  }
-
-  plugin.start = function(props) {
-    debug("starting with props " + JSON.stringify(props))
-    signalkClient = new SignalK.Client()
-    if(props.useDiscovery) {
-      signalkClient.on('discovery', connect)
-      debug("Starting discovery")
-      signalkClient.startDiscovery()
-    }
+  plugin.start = function(props, restart) {
     var hosts = props.hosts ||  []
-    hosts.forEach(host => {
-      debug("Connecting to " + host)
-      var aClient = new SignalK.Client()
-      signalkClient.connectDeltaByUrl(
-        "ws://" + host + "/signalk/v1/stream?subscribe=all",
-        (delta) => {
-          if(delta.updates) {
-            app.signalk.addDelta.call(app.signalk, delta)
-          }
-        },
-        (connection) => {
-          debug("Connected to " + host)
-        },
-        () => {
-          debug("Disconnected from " + host)
-        },
-        (err) => {
-          console.error(err)
+    debug("starting with props " + JSON.stringify(props))
+    const signalkClient = new SignalK.Client()
+
+    signalkClient.on('discovery', discovery => {
+      debug(discovery)
+      var discoveredHost = discovery.host + ':' + discovery.port
+      if(hosts.filter(hostSpec => hostSpec.host === discoveredHost).length === 0) {
+        hosts.push({
+          active: false,
+          host: discoveredHost
         })
+        signalkClient.stopDiscovery()
+        props.hosts = hosts
+        debug(props)
+        restart(props)
+      }
+    })
+    debug("Starting discovery")
+    signalkClient.startDiscovery()
+
+    hosts.forEach(hostSpec => {
+      if(hostSpec.enabled) {
+        debug("Connecting to " + hostSpec.host)
+        var aClient = new SignalK.Client()
+        signalkClient.connectDeltaByUrl(
+          "ws://" + hostSpec.host + "/signalk/v1/stream?subscribe=all",
+          (delta) => {
+            if(delta.updates) {
+              app.signalk.addDelta.call(app.signalk, delta)
+            }
+          },
+          (connection) => {
+            debug("Connected to " + hostSpec.host)
+          },
+          () => {
+            debug("Disconnected from " + hostSpec.host)
+          },
+          (err) => {
+            console.error(err)
+          })
+      }
     })
     debug("started")
-  };
+  }
 
   plugin.stop = function() {
     debug("stopping")
@@ -105,18 +78,22 @@ module.exports = function(app) {
   plugin.schema = {
     type: "object",
     properties: {
-      useDiscovery: {
-        type: "boolean",
-        title: "Discover hosts",
-        default: true
-      },
       hosts: {
-        title: "Configure hosts",
+        title: "Hosts",
         type: "array",
         items: {
-          type: "string",
-          title: "Host",
-          default: "host:port"
+          type: "object",
+          properties: {
+            enabled: {
+              type: "boolean",
+              title: "Active"
+            },
+            host: {
+              type: "string",
+              title: "Host",
+              default: "host:port"
+            }
+          }
         }
       }
     }
