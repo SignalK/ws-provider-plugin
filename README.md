@@ -8,4 +8,7 @@ Install by installing with npm in the node server's installation directory:
 npm install signalk/ws-provider-plugin
 ```
 
+The plugin will perform discovery automatically and add the discovered servers to the list of configured servers. Once on the list you can have the plugin connect to it with the host level `Active` flag.
+
+
 ![image](https://cloud.githubusercontent.com/assets/1049678/22710033/821b5990-ed84-11e6-858d-a5b74b2f6589.png)
