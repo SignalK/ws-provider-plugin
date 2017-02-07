@@ -6,4 +6,4 @@ Install by installing with npm in the node server's installation directory:
 npm install signalk/ws-provider-plugin
 ```
 
-![image](https://cloud.githubusercontent.com/assets/1049678/22407083/3b1e9b24-e668-11e6-843c-6c732c5a16b5.png)
+![image](https://cloud.githubusercontent.com/assets/1049678/22710033/821b5990-ed84-11e6-858d-a5b74b2f6589.png)
