@@ -14,7 +14,7 @@
  */
 
 const debug = require('debug')('signalk-ws-plugin-provider')
-const SignalK = require('signalk-client')
+const SignalK = require('@signalk/client')
 
 module.exports = function(app) {
   var plugin = {}
