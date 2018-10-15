@@ -1,6 +1,6 @@
 {
   "name": "@signalk/signalk-ws-provider",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Signal K Node Server plugin to pull data from Signal K Gateways/Servers via WebSocket connection",
   "main": "index.js",
   "author": "Teppo Kurki <teppo.kurki@iki.fi>",
