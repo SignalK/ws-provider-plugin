@@ -3,9 +3,6 @@
   "version": "0.0.2",
   "description": "Signal K Node Server plugin to pull data from Signal K Gateways/Servers via WebSocket connection",
   "main": "index.js",
-  "keywords": [
-    "signalk-node-server-plugin"
-  ],
   "author": "Teppo Kurki <teppo.kurki@iki.fi>",
   "license": "Apache-2.0",
   "dependencies": {
